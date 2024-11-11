@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Device Constitution</title>
+    <style>
+      body { min-width: 300px; padding: 10px; }
+      #result { margin-top: 10px; white-space: pre-wrap; }
+      .nav-links { margin-top: 10px; }
+      .nav-links a { margin-right: 10px; }
+      #loginSection { margin-bottom: 15px; }
+      .user-info { margin: 10px 0; }
+    </style>
+  </head>
+  <body>
+    <div id="loginSection">
+      <div id="userInfo" class="user-info" style="display: none;">
+        Logged in as: <span id="userEmail"></span>
+        <button id="signOut">Sign Out</button>
+      </div>
+      <div id="signInForm" style="display: none;">
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Password">
+        <button id="signIn">Sign In</button>
+        <button id="signUp">Sign Up</button>
+      </div>
+    </div>
+    <h1>Device Constitution</h1>
+    <button id="testRun">Run</button>
+    <div id="result"></div>
+    <script src="popup.js"></script>
+  </body>
+</html>

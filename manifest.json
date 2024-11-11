@@ -1,0 +1,54 @@
+{
+  "manifest_version": 3,
+  "name": "Device Constitution",
+  "version": "1.0.0",
+  "description": "Track and analyze screen content for task focus",
+  "permissions": [
+    "storage",
+    "tabs",
+    "activeTab",
+    "scripting",
+    "identity"
+  ],
+  "host_permissions": [
+    "<all_urls>",
+    "http://localhost:11434/*"
+  ],
+  "background": {
+    "service_worker": "background/background.js"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "public/icon16.png",
+      "48": "public/icon48.png",
+      "128": "public/icon128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content/content.js"]
+    }
+  ],
+  "icons": {
+    "16": "public/icon16.png",
+    "48": "public/icon48.png",
+    "128": "public/icon128.png"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' http://localhost:11434 https://api.anthropic.com https://*.firebase.com https://*.firebaseio.com https://*.googleapis.com"
+  },
+  "options_page": "options/options.html",
+  "web_accessible_resources": [{
+    "resources": ["content/*", "public/*"],
+    "matches": ["<all_urls>"]
+  }],
+  "oauth2": {
+    "client_id": "951484490367-XXXXX.apps.googleusercontent.com",
+    "scopes": ["email", "profile"]
+  },
+  "chrome_url_overrides": {
+    "newtab": "newtab/newtab.html"
+  }
+}
