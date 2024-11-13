@@ -7,6 +7,7 @@ import './NewTab.css';
 import MementoMori from './memento_mori/MementoMori';
 import { DeviceSettings } from '../interfaces';
 import { UserService } from '../services/userService';
+import { MessagingService } from '../services/messagingService';
 
 function debounce<T extends (...args: any[]) => any>(
   func: T,
@@ -139,6 +140,21 @@ const NewTab: React.FC = () => {
     }
   }, [user]);
 
+  const handleBlocklistToggle = async () => {
+    if (!user) return; // Ensure user is authenticated
+    try {
+      await MessagingService.sendNotificationToUser(user.uid, {
+        type: 'enableBlocklist',
+        title: 'Blocklist Update',
+        body: 'Attempting to toggle blocklist status',
+        timestamp: Date.now(),
+      });
+      console.log('Notification sent successfully');
+    } catch (error) {
+      console.error('Failed to send notification:', error);
+    }
+  };
+
   if (!authChecked) {
     return <div className="loading">Loading...</div>;
   }
@@ -203,6 +219,9 @@ const NewTab: React.FC = () => {
         </button>
         <button onClick={() => AuthService.signOut()}>
           Sign Out
+        </button>
+        <button onClick={handleBlocklistToggle}>
+          Toggle Blocklist
         </button>
       </div>
       {birthdate && <MementoMori birthDate={new Date(birthdate)} />}

@@ -68,6 +68,7 @@ export interface DeviceSettings {
     aiJudgementPolicy: 'pageLoad' | 'manual' | 'interval';
     aiJudgementInterval: number;
     debateBehaviour: 'oneRound' | 'multiRound';
+    disableOnPageLoad: boolean;
 }
 
 /**

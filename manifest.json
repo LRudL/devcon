@@ -5,6 +5,7 @@
   "description": "Track and analyze screen content for task focus",
   "permissions": [
     "storage",
+    "gcm",
     "tabs",
     "activeTab",
     "scripting",
@@ -37,7 +38,7 @@
     "128": "public/icon128.png"
   },
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' http://localhost:11434 https://api.anthropic.com https://*.firebase.com https://*.firebaseio.com https://*.googleapis.com"
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' http://localhost:11434 https://api.anthropic.com https://*.firebase.com https://*.firebaseio.com https://*.googleapis.com https://*.cloudfunctions.net"
   },
   "options_page": "options/options.html",
   "web_accessible_resources": [{

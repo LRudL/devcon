@@ -13,11 +13,14 @@ type MessageAction = keyof typeof messageHandlers;
 // Add URL pattern matching
 const X_DOMAINS = ['x.com', 'twitter.com'];
 const currentDomain = window.location.hostname;
+const settings = await optionsManager.getAll();
 
 if (X_DOMAINS.some(domain => currentDomain.includes(domain))) {
     console.log('X domain detected, checking settings...');
     try {
-        const settings = await optionsManager.getAll();
+        if (settings.disableOnPageLoad) {
+            console.log('Extension functionality disabled on page load');
+        }
         if (settings.enableXProcessor) {
             console.log('X processor enabled, starting...');
             const tweetProcessor = new TweetProcessor();
@@ -106,8 +109,10 @@ class AIJudgementManager {
     }
 }
 
-// Initialize the AI judgment manager
-const aiJudgementManager = new AIJudgementManager();
+if (!settings.disableOnPageLoad) {
+    // Initialize the AI judgment manager
+    const aiJudgementManager = new AIJudgementManager();
+}
 
 // Separate handler functions
 async function handleGetAIJudgement() {

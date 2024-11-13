@@ -57,7 +57,8 @@ const Options: React.FC = () => {
     aiJudgementPolicy: 'pageLoad',
     aiJudgementInterval: 240e3,
     mementoMori: false,
-    debateBehaviour: 'oneRound'
+    debateBehaviour: 'oneRound',
+    disableOnPageLoad: false
   });
   const [status, setStatus] = useState<{ message: string; isError: boolean } | null>(null);
   const [models, setModels] = useState<string[]>([]);
@@ -280,6 +281,18 @@ const Options: React.FC = () => {
         <button onClick={handleMementoMori}>
           {settings.mementoMori ? `memento mori (${settings.mementoMori})` : 'memento mori'}
         </button>
+      </ProviderPanel>
+
+      <ProviderPanel>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <input
+            type="checkbox"
+            id="disableOnPageLoad"
+            checked={settings.disableOnPageLoad}
+            onChange={e => setSettings(prev => ({ ...prev, disableOnPageLoad: e.target.checked }))}
+          />
+          <label htmlFor="disableOnPageLoad">Disable extension on page load</label>
+        </div>
       </ProviderPanel>
 
    </Container>
