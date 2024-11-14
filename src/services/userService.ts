@@ -15,7 +15,7 @@ export class UserService {
 
   private static debouncedSync = debounce(async (userId: string) => {
     try {
-      console.log('Syncing settings to Firebase for user:', userId);
+      console.log('Syncing settings to Firebase for user:', userId, this.latestSettings[userId]);
       const settings = this.latestSettings[userId];
       if (!settings) return;
 

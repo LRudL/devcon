@@ -110,7 +110,8 @@ export class OptionsManager {
 
         const userData = await UserService.getUserData(user.uid);
         if (userData?.settings) {
-            await this.update(userData.settings);
+            const { currentTask, ...otherSettings } = userData.settings;
+            await this.update(otherSettings);
         }
     }
 }

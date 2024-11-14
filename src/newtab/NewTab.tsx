@@ -8,17 +8,6 @@ import MementoMori from './memento_mori/MementoMori';
 import { DeviceSettings } from '../interfaces';
 import { UserService } from '../services/userService';
 
-function debounce<T extends (...args: any[]) => any>(
-  func: T,
-  wait: number
-): (...args: Parameters<T>) => void {
-  let timeout: ReturnType<typeof setTimeout>;
-  return (...args: Parameters<T>) => {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func(...args), wait);
-  };
-}
-
 const NewTab: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [authChecked, setAuthChecked] = useState(false);
@@ -50,9 +39,7 @@ const NewTab: React.FC = () => {
     loadSettings();
 
     const unsubscribe = optionsManager.subscribe((event) => {
-      if (event.key === 'currentTask') {
-        setCurrentTask(event.newValue as string);
-      } else if (event.key === 'mementoMori') {
+      if (event.key === 'mementoMori') {
         setBirthdate(event.newValue as string);
       }
     });
@@ -60,25 +47,21 @@ const NewTab: React.FC = () => {
     return () => unsubscribe();
   }, []);
 
-  const debouncedSave = React.useCallback(
-    debounce(async (value: string) => {
-      try {
-        await optionsManager.set('currentTask', value);
-        const currentSettings = await optionsManager.getAll();
-        pendingChanges.current = currentSettings;
-        setSaveStatus('saved');
-      } catch (error) {
-        console.error('Failed to save:', error);
-      }
-    }, 500),
-    []
-  );
-
-  const handleTaskChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const newValue = e.target.value;
-    setCurrentTask(newValue);
+  const handleSaveTask = async () => {
     setSaveStatus('saving');
-    debouncedSave(newValue);
+    try {
+      await optionsManager.set('currentTask', currentTask);
+      const currentSettings = await optionsManager.getAll();
+      pendingChanges.current = currentSettings;
+      setSaveStatus('saved');
+      // Flash the save status briefly then clear it
+      setTimeout(() => {
+        setSaveStatus(null);
+      }, 2000);
+    } catch (error) {
+      console.error('Failed to save:', error);
+      setError('Failed to save task');
+    }
   };
 
   const handleSignIn = async () => {
@@ -135,7 +118,8 @@ const NewTab: React.FC = () => {
 
   useEffect(() => {
     if (user) {
-      optionsManager.loadFromFirebase();
+      // optionsManager.loadFromFirebase();
+      // never load from firebase, only sync to firebase
     }
   }, [user]);
 
@@ -186,9 +170,17 @@ const NewTab: React.FC = () => {
         <textarea 
           className="main-textbox"
           value={currentTask}
-          onChange={handleTaskChange}
+          onChange={(e) => setCurrentTask(e.target.value)}
           placeholder="What are you working on?"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              handleSaveTask();
+            }
+          }}
         />
+        <button onClick={handleSaveTask}>
+          Start
+        </button>
       </div>
       <div className="save-status">
         {saveStatus === 'saving' && <span>Saving...</span>}

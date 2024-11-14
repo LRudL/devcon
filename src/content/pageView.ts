@@ -3,6 +3,10 @@ import { PageContent } from '../interfaces';
 export function getAllVisibleText(): PageContent {
     // Helper to check if element is visible
     function isVisible(element: HTMLElement): boolean {
+        if (element.id === 'ai-chat-banner' || element.closest('#ai-chat-banner')) {
+            return false;
+        }
+        
         const style = window.getComputedStyle(element);
         return style.display !== 'none' && 
                style.visibility !== 'hidden' && 
