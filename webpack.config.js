@@ -67,8 +67,8 @@ module.exports = {
             {
                 test: /\.css$/,
                 use: ['style-loader', 'css-loader'],
-            },
-        ],
+            }
+        ]
     },
     plugins: [
         new CopyPlugin({
@@ -81,7 +81,7 @@ module.exports = {
         }),
     ],
     resolve: {
-        extensions: ['.tsx', '.ts', '.js'],
+        extensions: ['.tsx', '.ts', '.js']
     },
     output: {
         filename: '[name].js',

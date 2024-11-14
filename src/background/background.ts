@@ -1,4 +1,5 @@
 // this is the chrome extension background script
+debugger;
 
 import { AIDebateResponse, MessageResponse, AICallLog, PageContent, DebateMessage } from '../interfaces';
 import { AIService } from './ai';
@@ -7,6 +8,14 @@ import { formatPageContent, createJudgementPrompt, continueDebate, createFirstDe
 import { handleError, AppError } from '../utils/errors';
 
 console.log('Background script loaded');
+
+// Add this export near the top of the file
+export async function sendToActiveTab(action: string, data: any): Promise<void> {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (tab?.id) {
+        await chrome.tabs.sendMessage(tab.id, { action, ...data });
+    }
+}
 
 // Message handler registry
 type MessageHandler = (request: any, sender: chrome.runtime.MessageSender) => Promise<any>;

@@ -1,7 +1,8 @@
 {
   "scripts": {
     "build": "webpack --mode production",
-    "dev": "webpack --mode development --watch"
+    "dev": "webpack --mode development --watch",
+    "debug-webpack": "webpack --stats detailed"
   },
   "devDependencies": {
     "@samrum/vite-plugin-web-extension": "^5.1.1",

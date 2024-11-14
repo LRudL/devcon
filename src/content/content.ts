@@ -5,7 +5,7 @@ import { handleError } from '../utils/errors';
 import { TweetProcessor } from './x';
 import { optionsManager } from '../options/optionsManager';
 
-console.log('Content script loaded!');
+console.log('Objective is running');
 
 // Add this type definition near the top of the file
 type MessageAction = keyof typeof messageHandlers;
@@ -92,7 +92,8 @@ class AIJudgementManager {
     private async handlePageLoad() {
         const currentSettings = await optionsManager.getAll();
         if (!isPaused(currentSettings.pauseState)) {
-            setTimeout(() => handleGetAIJudgement(), 1000);
+            handleGetAIJudgement();
+            // setTimeout(() => handleGetAIJudgement(), 500);
         }
     }
 
@@ -111,6 +112,7 @@ async function handleGetAIJudgement() {
     try {
         const pageText = getAllVisibleText();
         const response = await sendToBackground('getAIJudgement', { content: pageText });
+        console.log("handleGetAIJudgement - response", response);
         return response;
     } catch (error) {
         throw handleError(error, 'Failed to get page text');
@@ -135,6 +137,7 @@ async function handleAIJudgementReceived(message: MessageResponse) {
 
 // Add pause check before running anything
 if (!isPaused(settings.pauseState)) {
+    /*
     if (X_DOMAINS.some(domain => currentDomain.includes(domain))) {
         console.log('X domain detected, checking settings...');
         try {
@@ -152,11 +155,14 @@ if (!isPaused(settings.pauseState)) {
             handleError(error, 'Failed to load X processor');
         }
     }
+    */
 
     if (!settings.disableOnPageLoad) {
         // Initialize the AI judgment manager, which will handle the pause state
         console.log("Initializing AI judgement manager");
         const aiJudgementManager = new AIJudgementManager();
+    } else {
+        console.log("Objective is disabled on page load");
     }
 } else {
     console.log('Extension paused until:', settings.pauseState);
@@ -166,11 +172,17 @@ if (!isPaused(settings.pauseState)) {
 // Updated message handlers registry
 const messageHandlers = {
     getAIJudgement: handleGetAIJudgement,
-    aiJudgementReceived: handleAIJudgementReceived
+    aiJudgementReceived: handleAIJudgementReceived,
+    alertUser: async (message: { message: string }) => {
+        alert(message.message);
+    }
 };
 
-// Message listener
-chrome.runtime.onMessage.addListener((message: { action: MessageAction } & MessageResponse, sender, sendResponse) => {
+// Add this type near the top with other types
+type MessagePayload = MessageResponse | { message: string };
+
+// Update the message listener
+chrome.runtime.onMessage.addListener((message: { action: MessageAction } & MessagePayload, sender, sendResponse) => {
     console.log('Content script received message:', message);
     
     const handler = messageHandlers[message.action];
@@ -179,7 +191,7 @@ chrome.runtime.onMessage.addListener((message: { action: MessageAction } & Messa
         return true;
     }
 
-    handler(message)
+    handler(message as any)  // Use type assertion since handlers know their expected types
         .then(sendResponse)
         .catch(error => {
             const appError = handleError(error, `Handler failed: ${message.action}`);

@@ -1,7 +1,8 @@
 import { AIDebateResponse } from '../interfaces';
 import { logStore } from './logStore';
-import { optionsManager } from '../options/optionsManager';
+import { OptionsManagerBase } from '../options/optionsManagerBase';
 import { AppError, handleError } from '../utils/errors';
+import { sendToActiveTab } from './background';
 
 const CLAUDE_MODEL = "claude-3-haiku-20240307"
 const LOCAL_MODEL = "llama3.2"
@@ -10,7 +11,11 @@ const LOCAL_MODEL = "llama3.2"
 
 export class AIService {
     private static instance: AIService;
-    private constructor() {}
+    private optionsManager: OptionsManagerBase;
+    
+    constructor() {
+        this.optionsManager = new OptionsManagerBase();
+    }
 
     static getInstance(): AIService {
         if (!this.instance) {
@@ -23,7 +28,7 @@ export class AIService {
      * Main AI call handler that routes to appropriate provider based on settings
      */
     async callAI(prompt: string, type: string = 'other'): Promise<string> {
-        const settings = await optionsManager.getAll();
+        const settings = await this.optionsManager.getAll();
         
         if (settings.llmProvider === 'local') {
             if (!settings.localModelName) {
@@ -43,6 +48,9 @@ export class AIService {
         try {
             const result = await chrome.storage.local.get(['anthropicApiKey']);
             if (!result.anthropicApiKey) {
+                await sendToActiveTab('alertUser', { 
+                    message: 'Objective: you need to set your Anthropic API key in extension settings, or configure a local model instead' 
+                });
                 throw new AppError('Please set your Anthropic API key in extension settings');
             }
 
