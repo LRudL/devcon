@@ -30,7 +30,8 @@ export class OptionsManager {
                 aiJudgementPolicy: 'pageLoad' as const,
                 aiJudgementInterval: 240e3,
                 mementoMori: false,
-                debateBehaviour: 'oneRound' as const
+                debateBehaviour: 'oneRound' as const,
+                disableOnPageLoad: false
             }, (items) => resolve(items as DeviceSettings));
         });
     }
