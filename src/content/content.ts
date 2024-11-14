@@ -15,24 +15,13 @@ const X_DOMAINS = ['x.com', 'twitter.com'];
 const currentDomain = window.location.hostname;
 const settings = await optionsManager.getAll();
 
-if (X_DOMAINS.some(domain => currentDomain.includes(domain))) {
-    console.log('X domain detected, checking settings...');
-    try {
-        if (settings.disableOnPageLoad) {
-            console.log('Extension functionality disabled on page load');
-        }
-        if (settings.enableXProcessor) {
-            console.log('X processor enabled, starting...');
-            const tweetProcessor = new TweetProcessor();
-            tweetProcessor.start();
-        } else {
-            console.log('X processor disabled in settings');
-        }
-    } catch (error) {
-        handleError(error, 'Failed to load X processor');
-    }
-}
 
+// Add this helper function
+function isPaused(pauseState: string | false): boolean {
+    // pause state is a time stamp string at which the pause expires
+    if (!pauseState) return false;
+    return new Date() < new Date(pauseState);
+}
 
 // Add this type definition
 type AIJudgementPolicy = 'pageLoad' | 'manual' | 'interval';
@@ -101,17 +90,19 @@ class AIJudgementManager {
     }
 
     private async handlePageLoad() {
-        setTimeout(() => handleGetAIJudgement(), 1000);
+        const currentSettings = await optionsManager.getAll();
+        if (!isPaused(currentSettings.pauseState)) {
+            setTimeout(() => handleGetAIJudgement(), 1000);
+        }
     }
 
-    public triggerManualJudgement() {
-        return handleGetAIJudgement();
+    public async triggerManualJudgement() {
+        const currentSettings = await optionsManager.getAll();
+        if (!isPaused(currentSettings.pauseState)) {
+            return handleGetAIJudgement();
+        }
+        return { success: false, error: 'Extension is paused' };
     }
-}
-
-if (!settings.disableOnPageLoad) {
-    // Initialize the AI judgment manager
-    const aiJudgementManager = new AIJudgementManager();
 }
 
 // Separate handler functions
@@ -141,6 +132,36 @@ async function handleAIJudgementReceived(message: MessageResponse) {
         throw handleError(error, 'Failed to handle AI judgement');
     }
 }
+
+// Add pause check before running anything
+if (!isPaused(settings.pauseState)) {
+    if (X_DOMAINS.some(domain => currentDomain.includes(domain))) {
+        console.log('X domain detected, checking settings...');
+        try {
+            if (settings.disableOnPageLoad) {
+                console.log('Extension functionality disabled on page load');
+            }
+            if (settings.enableXProcessor) {
+                console.log('X processor enabled, starting...');
+                const tweetProcessor = new TweetProcessor();
+                tweetProcessor.start();
+            } else {
+                console.log('X processor disabled in settings');
+            }
+        } catch (error) {
+            handleError(error, 'Failed to load X processor');
+        }
+    }
+
+    if (!settings.disableOnPageLoad) {
+        // Initialize the AI judgment manager, which will handle the pause state
+        console.log("Initializing AI judgement manager");
+        const aiJudgementManager = new AIJudgementManager();
+    }
+} else {
+    console.log('Extension paused until:', settings.pauseState);
+}
+
 
 // Updated message handlers registry
 const messageHandlers = {

@@ -31,7 +31,8 @@ export class OptionsManager {
                 aiJudgementInterval: 240e3,
                 mementoMori: false,
                 debateBehaviour: 'oneRound' as const,
-                disableOnPageLoad: false
+                disableOnPageLoad: false,
+                pauseState: false
             }, (items) => resolve(items as DeviceSettings));
         });
     }
@@ -100,20 +101,6 @@ export class OptionsManager {
 
     private notifyListeners(event: SettingsChangeEvent): void {
         this.listeners.forEach(listener => listener(event));
-    }
-
-    /**
-     * Load settings from Firebase if available
-     */
-    public async loadFromFirebase(): Promise<void> {
-        const user = auth.currentUser;
-        if (!user) return;
-
-        const userData = await UserService.getUserData(user.uid);
-        if (userData?.settings) {
-            const { currentTask, ...otherSettings } = userData.settings;
-            await this.update(otherSettings);
-        }
     }
 }
 

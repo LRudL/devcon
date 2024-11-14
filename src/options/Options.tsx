@@ -58,7 +58,8 @@ const Options: React.FC = () => {
     aiJudgementInterval: 240e3,
     mementoMori: false,
     debateBehaviour: 'oneRound',
-    disableOnPageLoad: false
+    disableOnPageLoad: false,
+    pauseState: false
   });
   const [status, setStatus] = useState<{ message: string; isError: boolean } | null>(null);
   const [models, setModels] = useState<string[]>([]);
@@ -160,7 +161,7 @@ const Options: React.FC = () => {
 
 
 
-      <ProviderPanel>
+      {/* <ProviderPanel>
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <input
             type="checkbox"
@@ -170,8 +171,7 @@ const Options: React.FC = () => {
           />
           <label htmlFor="enableXProcessor">Enable X/Twitter content processing</label>
         </div>
-      </ProviderPanel>
-
+      </ProviderPanel> 
       <ProviderPanel>
         <div>
           <label htmlFor="aiJudgementPolicy">AI Judgment Policy:</label>
@@ -205,7 +205,7 @@ const Options: React.FC = () => {
             />
           </SettingsContainer>
         )}
-      </ProviderPanel>
+      </ProviderPanel> */}
 
       <ProviderPanel>
         <div>
@@ -279,7 +279,7 @@ const Options: React.FC = () => {
 
       <ProviderPanel>
         <button onClick={handleMementoMori}>
-          {settings.mementoMori ? `memento mori (${settings.mementoMori})` : 'memento mori'}
+          {settings.mementoMori ? `memento mori enabled on new tab page (${settings.mementoMori}) - click to disable` : 'memento mori'}
         </button>
       </ProviderPanel>
 

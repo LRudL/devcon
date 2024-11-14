@@ -15,6 +15,9 @@ export class UserService {
 
   private static debouncedSync = debounce(async (userId: string) => {
     try {
+      // TEMPORARY
+      console.log("firebase sync disabled until apps for other devices ready");
+      return;
       console.log('Syncing settings to Firebase for user:', userId, this.latestSettings[userId]);
       const settings = this.latestSettings[userId];
       if (!settings) return;

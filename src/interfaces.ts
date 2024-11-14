@@ -69,6 +69,7 @@ export interface DeviceSettings {
     aiJudgementInterval: number;
     debateBehaviour: 'oneRound' | 'multiRound';
     disableOnPageLoad: boolean;
+    pauseState: string | false;
 }
 
 /**

@@ -8,6 +8,8 @@ import MementoMori from './memento_mori/MementoMori';
 import { DeviceSettings } from '../interfaces';
 import { UserService } from '../services/userService';
 import { MessagingService } from '../services/messagingService';
+import { StatusDisplay } from '../content/components/StatusDisplay';
+import { PauseButton } from '../content/components/PauseButton';
 
 const NewTab: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -52,10 +54,10 @@ const NewTab: React.FC = () => {
     setSaveStatus('saving');
     try {
       await optionsManager.set('currentTask', currentTask);
+      await optionsManager.set('pauseState', false);
       const currentSettings = await optionsManager.getAll();
       pendingChanges.current = currentSettings;
       setSaveStatus('saved');
-      // Flash the save status briefly then clear it
       setTimeout(() => {
         setSaveStatus(null);
       }, 2000);
@@ -181,7 +183,7 @@ const NewTab: React.FC = () => {
 
   return (
     <div className="newtab-container">
-      <p>Current task:</p>
+      <p>Objective:</p>
       <div className="textbox-container">
         <textarea 
           className="main-textbox"
@@ -190,6 +192,7 @@ const NewTab: React.FC = () => {
           placeholder="What are you working on?"
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
+              e.preventDefault();
               handleSaveTask();
             }
           }}
@@ -202,18 +205,17 @@ const NewTab: React.FC = () => {
         {saveStatus === 'saving' && <span>Saving...</span>}
         {saveStatus === 'saved' && <span>Saved</span>}
       </div>
+      <StatusDisplay />
       <div className="action-buttons">
         <button onClick={() => chrome.runtime.openOptionsPage()}>
           Settings
         </button>
+        <PauseButton />
         <button onClick={() => chrome.tabs.create({ url: '/logs/logs.html' })}>
           View Logs
         </button>
         <button onClick={() => AuthService.signOut()}>
           Sign Out
-        </button>
-        <button onClick={handleBlocklistToggle}>
-          Toggle Blocklist
         </button>
       </div>
       {birthdate && <MementoMori birthDate={new Date(birthdate)} />}
