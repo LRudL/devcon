@@ -98,12 +98,12 @@ export function getAllVisibleText(): PageContent {
 }
 
 export function blurPageContent() {
-    const allElements = document.body.children;
-    for (const element of Array.from(allElements)) {
-        if (element.id !== 'ai-chat-banner') {
-            (element as HTMLElement).style.filter = 'blur(3px)';
+    const content = document.body;
+    Array.from(content.children).forEach(child => {
+        if (child.id !== 'chat-banner-container') {  // Skip the chat banner
+            (child as HTMLElement).style.filter = 'blur(3px)';
         }
-    }
+    });
 }
 
 export function unblurPageContent() {

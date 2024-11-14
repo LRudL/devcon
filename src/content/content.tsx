@@ -1,9 +1,11 @@
 import { MessageResponse, DeviceSettings, SettingsChangeEvent } from '../interfaces';
-import { getAllVisibleText, blurPageContent } from './pageView';
-import { ChatBanner } from './components/ChatBanner';
+import { getAllVisibleText, blurPageContent, unblurPageContent } from './pageView';
+import { BannerContainer, ChatBanner } from './components/ChatBanner';
 import { handleError } from '../utils/errors';
 import { TweetProcessor } from './x';
 import { optionsManager } from '../options/optionsManager';
+import { createRoot } from 'react-dom/client';
+import React, { useCallback } from 'react';
 
 console.log('Objective is running');
 
@@ -11,8 +13,8 @@ console.log('Objective is running');
 type MessageAction = keyof typeof messageHandlers;
 
 // Add URL pattern matching
-const X_DOMAINS = ['x.com', 'twitter.com'];
-const currentDomain = window.location.hostname;
+// const X_DOMAINS = ['x.com', 'twitter.com'];
+// const currentDomain = window.location.hostname;
 const settings = await optionsManager.getAll();
 
 
@@ -119,18 +121,34 @@ async function handleGetAIJudgement() {
     }
 }
 
+// Update the handleAIJudgementReceived function
 async function handleAIJudgementReceived(message: MessageResponse) {
     try {
         if (message.success && message.analysis) {
             if (message.analysis.toLowerCase().trim().startsWith('no')) {
+                console.log('Creating chat banner...');
                 const cleanAnalysis = message.analysis.replace(/^no\.\s*/i, '');
-                new ChatBanner(cleanAnalysis);
+                
+                // Remove any existing banner and root
+                const existingBanner = document.getElementById('chat-banner-container');
+                if (existingBanner) {
+                    existingBanner.remove();
+                }
+                
+                // Create a fresh container
+                const container = document.createElement('div');
+                container.id = 'chat-banner-container';
+                document.body.insertBefore(container, document.body.firstChild);
+                
+                // Create root and render
+                const root = createRoot(container);
+                root.render(<BannerContainer message={cleanAnalysis} />);
+                
                 blurPageContent();
             }
-        } else {
-            console.log("AI thinks this page is fine")
         }
     } catch (error) {
+        console.error('Error in handleAIJudgementReceived:', error);
         throw handleError(error, 'Failed to handle AI judgement');
     }
 }
@@ -214,5 +232,4 @@ async function sendToBackground(action: string, data: any): Promise<any> {
         });
     });
 }
-
 

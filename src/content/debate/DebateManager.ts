@@ -4,7 +4,7 @@ import { getAllVisibleText } from '../pageView';
 
 export class DebateManager {
     private messages: DebateMessage[] = [];
-    private debateBehaviour: 'oneRound' | 'multiRound' = 'oneRound';
+    private debateBehaviour: 'oneRound' | 'multiRound' = 'multiRound';
     private onStateChange?: (messages: ChatMessage[]) => void;
     
     constructor(initialMessage: string) {
@@ -18,7 +18,7 @@ export class DebateManager {
 
     private async loadSettings() {
         try {
-            const settings = await chrome.storage.local.get({ debateBehaviour: 'oneRound' });
+            const settings = await chrome.storage.local.get({ debateBehaviour: 'multiRound' });
             this.debateBehaviour = settings.debateBehaviour;
         } catch (error) {
             throw handleError(error, 'Failed to load debate settings');
