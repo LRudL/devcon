@@ -10,6 +10,9 @@ import { UserService } from '../services/userService';
 import { MessagingService } from '../services/messagingService';
 import { StatusDisplay } from '../content/components/StatusDisplay';
 import { PauseButton } from '../content/components/PauseButton';
+import { IconButton, Menu, MenuItem } from '@mui/material';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import { taskLogStore } from '../background/logStore';
 
 const NewTab: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -22,6 +25,8 @@ const NewTab: React.FC = () => {
   const [currentTask, setCurrentTask] = useState('');
   const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | null>(null);
   const [birthdate, setBirthdate] = useState<string | null>(null);
+  const [previousTasks, setPreviousTasks] = useState<string[]>([]);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const pendingChanges = useRef<DeviceSettings | null>(null);
 
@@ -49,6 +54,16 @@ const NewTab: React.FC = () => {
 
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    const loadPreviousTasks = async () => {
+      const taskLogs = await taskLogStore.getLogs();
+      const uniqueTasks = Array.from(new Set(taskLogs.map(log => log.task)))
+        .filter(task => task !== currentTask && task !== '');
+      setPreviousTasks(uniqueTasks);
+    };
+    loadPreviousTasks();
+  }, [currentTask]);
 
   const handleSaveTask = async () => {
     setSaveStatus('saving');
@@ -142,6 +157,35 @@ const NewTab: React.FC = () => {
     }
   };
 
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleTaskSelect = async (task: string) => {
+    setCurrentTask(task);
+    handleClose();
+    
+    console.log("SAVING TASK", task);
+    setSaveStatus('saving');
+    try {
+      await optionsManager.set('currentTask', task);
+      await optionsManager.set('pauseState', false);
+      const currentSettings = await optionsManager.getAll();
+      pendingChanges.current = currentSettings;
+      setSaveStatus('saved');
+      setTimeout(() => {
+        setSaveStatus(null);
+      }, 2000);
+    } catch (error) {
+      console.error('Failed to save:', error);
+      setError('Failed to save task');
+    }
+  };
+
   if (!authChecked) {
     return <div className="loading">Loading...</div>;
   }
@@ -198,6 +242,23 @@ const NewTab: React.FC = () => {
             }
           }}
         />
+        <IconButton onClick={handleClick}>
+          <KeyboardArrowDownIcon />
+        </IconButton>
+        <Menu
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={handleClose}
+        >
+          {previousTasks.map((task, index) => (
+            <MenuItem 
+              key={index} 
+              onClick={() => handleTaskSelect(task)}
+            >
+              {task}
+            </MenuItem>
+          ))}
+        </Menu>
         <button onClick={handleSaveTask}>
           Start
         </button>

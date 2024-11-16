@@ -145,7 +145,7 @@ const Options: React.FC = () => {
       </SaveContainer>
 
       <FormGroup>
-        <label htmlFor="constitution">Device Constitution (general principles related to how you use your device):</label>
+        <label htmlFor="constitution">Browser Constitution (general principles related to how you use your device):</label>
         <textarea
           id="constitution"
           value={settings.deviceConstitution}
@@ -223,8 +223,8 @@ const Options: React.FC = () => {
               debateBehaviour: e.target.value as DeviceSettings['debateBehaviour']
             }))}
           >
-            <option value="oneRound">One round, instant close on lose</option>
-            <option value="multiRound">Multi-round, user closes</option>
+            <option value="oneRound">One round, instant tab close on lose</option>
+            <option value="multiRound">Multi-round, user closes tab</option>
           </Select>
         </div>
       </ProviderPanel>

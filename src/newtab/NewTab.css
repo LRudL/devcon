@@ -195,15 +195,18 @@ body {
 }
 
 .textbox-container {
-  width: 100%;
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 12px;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.main-textbox {
+  flex: 1;
 }
 
 .textbox-container button {
   padding: 8px 24px;
+  height: 50px;
   background-color: #0066cc;
   color: white;
   border: none;
@@ -224,4 +227,24 @@ body {
 .textbox-container button:active {
   transform: translateY(0);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.textbox-container .MuiIconButton-root {
+  padding: 4px;
+  margin-top: 8px;
+  background-color: transparent;
+}
+
+.textbox-container .MuiIconButton-root:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.textbox-container .MuiSvgIcon-root {
+  font-size: 20px;
+  color: #333;
+}
+
+.textbox-container .MuiMenu-paper {
+  max-height: 200px;
+  width: 200px;
 }

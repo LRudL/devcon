@@ -22,7 +22,11 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.32.1",
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
     "@firebase/messaging": "^0.12.13",
+    "@mui/icons-material": "^6.1.7",
+    "@mui/material": "^6.1.7",
     "@types/lodash": "^4.17.13",
     "firebase": "^11.0.1",
     "firebase-admin": "^12.7.0",

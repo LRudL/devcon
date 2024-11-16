@@ -12,12 +12,17 @@ export const StatusDisplay: React.FC = () => {
                 setStatus('Running');
             } else {
                 const pauseDate = new Date(settings.pauseState);
-                if (pauseDate > new Date()) {
-                    setStatus(`Paused until ${pauseDate.toLocaleTimeString()}`);
-                } else {
-                    await optionsManager.set('pauseState', false);
-                    setStatus('Running');
-                }
+                const now = new Date();
+                const isSameDay = now.toDateString() === pauseDate.toDateString();
+                
+                const formattedTime = isSameDay
+                    ? pauseDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                    : `${pauseDate.toISOString().split('T')[0]} ${pauseDate.toLocaleTimeString([], { 
+                        hour: '2-digit', 
+                        minute: '2-digit'
+                    })}`;
+                
+                setStatus(`Paused until ${formattedTime}`);
             }
         };
 
