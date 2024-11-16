@@ -80,7 +80,8 @@ const bannerStyles: {
         padding: '8px 12px',
         border: '1px solid #DDD',
         borderRadius: '4px',
-        fontSize: '14px'
+        fontSize: '14px',
+        color: 'black'
     },
     closeButton: {
         padding: '8px 16px',

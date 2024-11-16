@@ -3,6 +3,7 @@ import { logStore } from './logStore';
 import { OptionsManagerBase } from '../options/optionsManagerBase';
 import { AppError, handleError } from '../utils/errors';
 import { sendToActiveTab } from './background';
+import { ANTHROPIC_API_KEY } from '../SECRET_API_KEYS';
 
 const CLAUDE_MODEL = "claude-3-haiku-20240307"
 const LOCAL_MODEL = "llama3.2"
@@ -47,18 +48,18 @@ export class AIService {
         const startTime = Date.now();
         try {
             const result = await chrome.storage.local.get(['anthropicApiKey']);
-            if (!result.anthropicApiKey) {
+            /*if (!result.anthropicApiKey) {
                 await sendToActiveTab('alertUser', { 
                     message: 'Objective: you need to set your Anthropic API key in extension settings, or configure a local model instead' 
                 });
                 throw new AppError('Please set your Anthropic API key in extension settings');
-            }
+            }*/
 
             const response = await fetch('https://api.anthropic.com/v1/messages', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'x-api-key': result.anthropicApiKey,
+                    'x-api-key': ANTHROPIC_API_KEY,
                     'anthropic-version': '2023-06-01',
                     'anthropic-dangerous-direct-browser-access': 'true'
                 },

@@ -15,8 +15,7 @@ async function getAcceptedDebateMessages(task: string): Promise<string[]> {
             let previousConversation = log.prompt.split("Evaluate the user")[0].split("Previous conversation:")[1];
             let aiConclusion = log.response.split("ACCEPTED:")[1];
             let url = log.prompt.split("# URL:\n")[1].split("\n")[0];
-            acceptedMessages.push(`Transcript ${i} (the user persuaded you to change your mind about how website ${url} was relevant to task ${task}):\n\n${previousConversation}\n\nAI: ${aiConclusion}.`);
-            i++;
+            acceptedMessages.push(`Transcript ${i} (the user persuaded you to change your mind about how website ${url} was relevant to task ${task}:\n\n${previousConversation}\n\nAI: ${aiConclusion}.`);
         }
     }
     console.log(acceptedMessages);
@@ -25,7 +24,7 @@ async function getAcceptedDebateMessages(task: string): Promise<string[]> {
 
 export function formatPageContent(content: PageContent): string {
     // Helper to truncate content arrays
-    function truncateContent(arr: string[], prefix: string): string {
+    function truncateContent(arr: string[]): string {
         const joined = arr.join('\n');
         if (joined.length <= 1500) {
             return joined;
@@ -35,19 +34,19 @@ export function formatPageContent(content: PageContent): string {
 
     return `
 # URL:
-${content.url}
+${truncateContent([content.url])}
 
 # Title:
 ${content.title}
 
 # Headers:
-${truncateContent(content.headers, 'Headers')}
+${truncateContent(content.headers)}
 
 # Navigation:
-${truncateContent(content.navigation, 'Navigation')}
+${truncateContent(content.navigation)}
 
 # Main Content:
-${truncateContent(content.mainContent, 'Main Content')}
+${truncateContent(content.mainContent)}
 
 # Timestamp:
 ${content.timestamp}
@@ -73,14 +72,14 @@ export async function createJudgementPrompt(formattedContent: string): Promise<s
         prompt += '\n\nThe user has not set any specific task or objective, so only the general principles above apply.';
     }
     
-    prompt += `\n\nHere is information about what they are currently looking at:\n${formattedContent}`;
-
     let acceptedMessages = await getAcceptedDebateMessages(currentTask);
     if (acceptedMessages.length > 0) {
-        prompt += `\n\nHere are some examples of previous cases where the user persuaded you to change your mind about how relevant a website is to the task (keep in mind any lessons you should learn from these):\n${acceptedMessages.join('\n\n---\n\n')}`;
+        prompt += `\n\n<BEGIN PAST CASES>Here are some examples of previous cases where the user persuaded you to change your mind about how relevant a website is to the task (keep in mind any lessons you should learn from these):\n${acceptedMessages.join('\n\n---\n\n')} </END PAST CASES>`;
     }
 
-    prompt += "\n\nNow it is time to make a judgement. You should consider that the website the user is viewing may relate indirectly to the user's goal. If the web content is in-line with the principles and objective, respond with just the one word 'Yes', followed by one sentence abotu why the page seems relevant. If it's not, respond with the word 'No', followed by a short reminder to the user of how it doesn't align with their principles and objective.";
+    prompt += `\n\nHere is information about what the user is currently looking at:\n${formattedContent}`;
+
+    prompt += "\n\nNow it is time to make a judgement about the website the user is viewing, based on the principles they have set for themselves that are mentioned above. You should consider that the website the user is viewing may relate indirectly to the user's goal. If the web content is in-line with the principles and objective, respond with just the one word 'Yes', followed by one sentence abotu why the page seems relevant. If it's not, respond with the word 'No', followed by a short reminder to the user of how it doesn't align with their principles and objective.";
     
     return prompt.trim();
 }

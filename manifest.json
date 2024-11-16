@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Device Constitution",
+  "name": "Objective",
   "version": "1.0.0",
   "description": "Track and analyze screen content for task focus",
   "permissions": [

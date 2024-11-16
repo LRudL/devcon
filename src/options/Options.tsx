@@ -241,7 +241,7 @@ const Options: React.FC = () => {
             />
             <label htmlFor="cloudLLM">Cloud (Anthropic)</label>
           </div>
-          <SettingsContainer>
+          {/*<SettingsContainer>
             <label htmlFor="apiKey">Anthropic API Key:</label>
             <input
               id="apiKey"
@@ -249,7 +249,7 @@ const Options: React.FC = () => {
               value={settings.anthropicApiKey}
               onChange={e => setSettings(prev => ({ ...prev, anthropicApiKey: e.target.value }))}
             />
-          </SettingsContainer>
+          </SettingsContainer>*/}
         </ProviderPanel>
 
         <ProviderPanel>

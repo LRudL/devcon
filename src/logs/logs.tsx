@@ -63,7 +63,8 @@ export const LogsPage: React.FC = () => {
         }
     };
 
-    const escapeHtml = (unsafe: string): string => {
+    const escapeHtml = (unsafe: string | undefined): string => {
+        if (!unsafe) return '';
         return unsafe
             .replace(/&/g, "&amp;")
             .replace(/</g, "&lt;")

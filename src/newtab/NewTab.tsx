@@ -193,6 +193,8 @@ const NewTab: React.FC = () => {
   if (!user) {
     return (
       <div className="login-container">
+        <button onClick={() => chrome.tabs.create({ url: 'https://docs.google.com/document/d/1X0f6y-mVczKz4Exmg7KMW8o161xRXS-BJjzaDyF__I0/edit?usp=sharing' })}>USER AGREEMENT</button>
+        <p>If you haven't read the user agreement, please do so now. Logging in means you agree to the agreement.</p>
         <div className="login-form">
           <input
             type="email"
@@ -269,6 +271,18 @@ const NewTab: React.FC = () => {
       </div>
       <StatusDisplay />
       <div className="action-buttons">
+        <button 
+          onClick={() => chrome.tabs.create({ url: 'https://docs.google.com/document/d/1LwMdq-hz7YNvrRnB7QVK-vM2_3S6edTC0LUNlxnDvZo/edit?tab=t.0#heading=h.dyyi1ajy7gi' })}
+          style={{ backgroundColor: 'rgba(255, 165, 0, 0.2)' }}
+        >
+          Guide
+        </button>
+        <button 
+          onClick={() => chrome.tabs.create({ url: 'https://forms.gle/VQyKM7ngeFtZAW5w8' })}
+          style={{ backgroundColor: 'rgba(255, 165, 0, 0.2)' }}
+        >
+          Submit feedback
+        </button>
         <button onClick={() => chrome.runtime.openOptionsPage()}>
           Settings
         </button>
