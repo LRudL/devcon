@@ -94,8 +94,8 @@ class AIJudgementManager {
     private async handlePageLoad() {
         const currentSettings = await optionsManager.getAll();
         if (!isPaused(currentSettings.pauseState)) {
-            handleGetAIJudgement();
-            // setTimeout(() => handleGetAIJudgement(), 500);
+            // handleGetAIJudgement();
+            setTimeout(() => handleGetAIJudgement(), 1000);
         }
     }
 
