@@ -256,7 +256,7 @@ const Options: React.FC = () => {
               checked={settings.llmProvider === 'local'}
               onChange={() => setSettings(prev => ({ ...prev, llmProvider: 'local' }))}
             />
-            <label htmlFor="localLLM">Local (Ollama)</label>
+            <label htmlFor="localLLM">Local (Ollama - probably broken, and requires Ollama install)</label>
           </div>
           <SettingsContainer>
             <label htmlFor="modelName">Ollama Model:</label>

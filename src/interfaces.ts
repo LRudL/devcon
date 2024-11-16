@@ -8,17 +8,30 @@ export interface PageContent {
 }
 
 /**
- * Interface representing a single AI API call log entry
+ * Base interface for all log entries
  */
-export interface AICallLog {
-    timestamp: string;      // ISO timestamp of when the call was made
-    model: string;          // The model used for the call
-    type: string;          // Changed from union type to string
-    prompt: string;         // The prompt sent to the AI
-    response: string;        // The response received from the AI
-    inputTokens?: number;   // Number of tokens in the prompt
-    outputTokens?: number;  // Number of tokens in the response
-    durationSeconds: number;  // Add this new field
+export interface BaseLog {
+    timestamp: string;      // ISO timestamp
+}
+
+/**
+ * Interface for task change log entries
+ */
+export interface TaskLog extends BaseLog {
+    task: string;
+}
+
+/**
+ * Interface for AI call log entries (maintaining existing structure)
+ */
+export interface AICallLog extends BaseLog {
+    model: string;
+    type: string;
+    prompt: string;
+    response: string;
+    inputTokens?: number;
+    outputTokens?: number;
+    durationSeconds: number;
 }
 
 /**

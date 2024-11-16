@@ -1,6 +1,7 @@
 // This is separate from the OptionsManager class because it is used by the background script
 // and the background script should not have to load Firebase
 
+import { taskLogStore } from '../background/logStore';
 import { DeviceSettings, SettingsChangeEvent } from '../interfaces';
 
 export class OptionsManagerBase {
@@ -73,6 +74,12 @@ export class OptionsManagerBase {
         key: K,
         value: DeviceSettings[K]
     ): Promise<void> {
+        if (key === 'currentTask') {
+            taskLogStore.addLog({
+                timestamp: new Date().toISOString(),
+                task: value as string
+            });
+        }
         return this.update({ [key]: value });
     }
 

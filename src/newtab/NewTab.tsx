@@ -113,8 +113,9 @@ const NewTab: React.FC = () => {
   useEffect(() => {
     return () => {
       if (pendingChanges.current && user) {
-        UserService.syncSettings(user.uid, pendingChanges.current);
-        pendingChanges.current = null;
+        console.log("Firebase syncing cancelled until mobile device features working");
+        // UserService.syncSettings(user.uid, pendingChanges.current);
+        // pendingChanges.current = null;
       }
     };
   }, [user]);

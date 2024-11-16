@@ -3,7 +3,7 @@ import { ChatMessage } from '../../interfaces';
 import { unblurPageContent } from '../pageView';
 import { DebateManager } from '../debate/DebateManager';
 import { handleError } from '../../utils/errors';
-import { createRoot } from 'react-dom/client';
+import { optionsManager } from '../../options/optionsManager';
 
 
 class ErrorBoundary extends React.Component<{children: React.ReactNode}, {hasError: boolean}> {
@@ -161,10 +161,8 @@ export const ChatBanner: React.FC<ChatBannerProps> = ({ initialMessage, onClose,
     const newObjective = prompt('What would you like to work on instead?');
     if (newObjective?.trim()) {
         try {
-            await chrome.storage.local.set({ 
-                currentTask: newObjective,
-                pauseState: false 
-            });
+            await optionsManager.set("currentTask", newObjective);
+            await optionsManager.set('pauseState', false);
             onAccepted();
         } catch (error) {
             console.error('Failed to set new objective:', error);

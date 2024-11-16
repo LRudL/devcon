@@ -51,7 +51,7 @@ export async function createJudgementPrompt(formattedContent: string): Promise<s
     }
     
     prompt += `\n\nHere is information about what they are currently looking at:\n${formattedContent}`;
-    prompt += "\n\nIf the web content is in-line with the principles and objective, respond with just the one word 'Yes', followed by one sentence abotu why the page seems relevant. If it's not, respond with the word 'No', followed by a short reminder to the user of how it doesn't align with their principles and objective.";
+    prompt += "\n\nNow it is time to make a judgement. You should consider that the website the user is viewing may relate indirectly to the user's goal. If the web content is in-line with the principles and objective, respond with just the one word 'Yes', followed by one sentence abotu why the page seems relevant. If it's not, respond with the word 'No', followed by a short reminder to the user of how it doesn't align with their principles and objective.";
     
     return prompt.trim();
 }
