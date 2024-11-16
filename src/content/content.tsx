@@ -69,13 +69,23 @@ class AIJudgementManager {
     }
 
     private setupPageLoadTrigger() {
-        window.addEventListener('load', () => {
+        // Check if document is already loaded
+        if (document.readyState === 'complete') {
+            console.log("Document already loaded, triggering AI judgement immediately");
             this.handlePageLoad();
-        });
+        } else {
+            // Add listener for future load event
+            window.addEventListener('load', () => {
+                console.log("Page loaded, triggering AI judgement");
+                this.handlePageLoad();
+            });
+        }
         
+        // Navigation API listener remains the same
         if ('navigation' in window) {
             ((window as any).navigation).addEventListener('navigate', (event: any) => {
                 if (event.navigationType === 'reload' || event.navigationType === 'push') {
+                    console.log("Navigation event detected, triggering AI judgement");
                     this.handlePageLoad();
                 }
             });

@@ -22,16 +22,17 @@ async function getAcceptedDebateMessages(task: string): Promise<string[]> {
     return acceptedMessages;
 }
 
-export function formatPageContent(content: PageContent): string {
-    // Helper to truncate content arrays
-    function truncateContent(arr: string[]): string {
-        const joined = arr.join('\n');
-        if (joined.length <= 1500) {
-            return joined;
-        }
-        return joined.substring(0, 1497) + '...';
+// Helper to truncate content arrays
+function truncateContent(arr: string[]): string {
+    const joined = arr.join('\n');
+    if (joined.length <= 1500) {
+        return joined;
     }
+    return joined.substring(0, 1497) + '...';
+}
 
+
+export function formatPageContent(content: PageContent): string {
     return `
 # URL:
 ${truncateContent([content.url])}
