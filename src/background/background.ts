@@ -1,9 +1,9 @@
 // this is the chrome extension background script
 debugger;
 
-import { AIDebateResponse, MessageResponse, AICallLog, PageContent, DebateMessage } from '../interfaces';
+import { AIDebateResponse, MessageResponse, AICallLog, PageContent, DebateMessage, BaseLog } from '../interfaces';
 import { AIService } from './ai';
-import { logStore } from './logStore';
+import { logStore, taskLogStore } from './logStore';
 import { formatPageContent, createJudgementPrompt, continueDebate, createFirstDebatePrompt } from './prompts';
 import { handleError, AppError } from '../utils/errors';
 
@@ -35,7 +35,7 @@ const messageHandlers: Record<string, MessageHandler> = {
     },
     
     getLogs: async (request) => {
-        return await handleGetLogs(request.limit);
+        return await handleGetLogs(request.limit, request.logType);
     },
     
     closeTab: async (_, sender) => {
@@ -44,8 +44,8 @@ const messageHandlers: Record<string, MessageHandler> = {
         }
     },
     
-    deleteLogs: async () => {
-        await handleDeleteLogs();
+    deleteLogs: async (request) => {
+        await handleDeleteLogs(request.logType);
     }
 };
 
@@ -154,18 +154,20 @@ async function handleAIJudgement(
     }
 }
 
-async function handleGetLogs(limit: number): Promise<AICallLog[]> {
+async function handleGetLogs(limit: number, logType: 'api' | 'task' = 'api'): Promise<BaseLog[]> {
     try {
-        return await logStore.getLogs(limit);
+        const store = logType === 'api' ? logStore : taskLogStore;
+        return await store.getLogs(limit);
     } catch (error) {
-        throw handleError(error, 'Failed to get logs');
+        throw handleError(error, `Failed to get ${logType} logs`);
     }
 }
 
-async function handleDeleteLogs(): Promise<void> {
+async function handleDeleteLogs(logType: 'api' | 'task' = 'api'): Promise<void> {
     try {
-        await logStore.clearLogs();
+        const store = logType === 'api' ? logStore : taskLogStore;
+        await store.clearLogs();
     } catch (error) {
-        throw handleError(error, 'Failed to delete logs');
+        throw handleError(error, `Failed to delete ${logType} logs`);
     }
 }

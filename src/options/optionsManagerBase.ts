@@ -75,6 +75,10 @@ export class OptionsManagerBase {
         value: DeviceSettings[K]
     ): Promise<void> {
         if (key === 'currentTask') {
+            // if the text has not changed, don't log it
+            if (value === (await this.get('currentTask'))) {
+                return;
+            }
             taskLogStore.addLog({
                 timestamp: new Date().toISOString(),
                 task: value as string

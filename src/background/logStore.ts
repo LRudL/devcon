@@ -41,3 +41,31 @@ export class TaskLogStore extends BaseLogStore<TaskLog> {
 // Create singleton instances
 export const logStore = new LogStore();
 export const taskLogStore = new TaskLogStore();
+
+
+// a function that, given a task string, returns all API call log entries that were logged while that task was active
+export async function getTaskLogs(task: string): Promise<AICallLog[]> {
+    if (task === '') {
+        return Promise.resolve([]);
+    }
+    let apiLogs = await logStore.getLogs();
+    let taskLogs = await taskLogStore.getLogs(); // each task log has a task string, and a timestamp string for when it started
+    let periods = [];
+    let i = 0;
+    while (i < taskLogs.length) {
+        let taskLog = taskLogs[i];
+        if (taskLog.task === task) {
+            if (i+1 < taskLogs.length) {
+                periods.push([taskLog.timestamp, taskLogs[i+1].timestamp]);
+            } else {
+                periods.push([taskLog.timestamp, new Date().toISOString()]);
+            }
+        }
+        i++;
+    }
+    return apiLogs.filter((log) => {
+        return periods.some((period) => {
+            return log.timestamp >= period[0] && log.timestamp <= period[1];
+        });
+    });
+}

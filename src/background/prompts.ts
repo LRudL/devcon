@@ -1,4 +1,27 @@
 import { DebateMessage, PageContent } from '../interfaces';
+import { getTaskLogs } from './logStore';
+
+async function getAcceptedDebateMessages(task: string): Promise<string[]> {
+    let apiLogs = await getTaskLogs(task); // this is a list of AICallLogs that were logged while the task was active
+    // Now we want to find the ones that have the string "ACCEPTED" in the .response field
+    // because that means the AI accepted the user's explanation.
+    // When this is found, we should extract the part of the .prompt field AFTER "Previous conversation:" and BEFORE "Evaluate the user"
+    // and return that as the .content field of a DebateMessage object, with the .role field set to "User"
+    // We should do this for each such API call log that is found, and return all such strings in an array
+    let acceptedMessages: string[] = [];
+    let i = 1;
+    for (let log of apiLogs) {
+        if (log.response.includes("ACCEPTED")) {
+            let previousConversation = log.prompt.split("Evaluate the user")[0].split("Previous conversation:")[1];
+            let aiConclusion = log.response.split("ACCEPTED:")[1];
+            let url = log.prompt.split("# URL:\n")[1].split("\n")[0];
+            acceptedMessages.push(`Transcript ${i} (the user persuaded you to change your mind about how website ${url} was relevant to task ${task}):\n\n${previousConversation}\n\nAI: ${aiConclusion}.`);
+            i++;
+        }
+    }
+    console.log(acceptedMessages);
+    return acceptedMessages;
+}
 
 export function formatPageContent(content: PageContent): string {
     // Helper to truncate content arrays
@@ -51,6 +74,12 @@ export async function createJudgementPrompt(formattedContent: string): Promise<s
     }
     
     prompt += `\n\nHere is information about what they are currently looking at:\n${formattedContent}`;
+
+    let acceptedMessages = await getAcceptedDebateMessages(currentTask);
+    if (acceptedMessages.length > 0) {
+        prompt += `\n\nHere are some examples of previous cases where the user persuaded you to change your mind about how relevant a website is to the task (keep in mind any lessons you should learn from these):\n${acceptedMessages.join('\n\n---\n\n')}`;
+    }
+
     prompt += "\n\nNow it is time to make a judgement. You should consider that the website the user is viewing may relate indirectly to the user's goal. If the web content is in-line with the principles and objective, respond with just the one word 'Yes', followed by one sentence abotu why the page seems relevant. If it's not, respond with the word 'No', followed by a short reminder to the user of how it doesn't align with their principles and objective.";
     
     return prompt.trim();

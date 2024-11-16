@@ -123,6 +123,11 @@ const Options: React.FC = () => {
     setSettings(prev => ({ ...prev, mementoMori: birthdate }));
   };
 
+  const handleTaskChange = async (newTask: string) => {
+    await optionsManager.set('currentTask', newTask);
+    setSettings(prev => ({ ...prev, currentTask: newTask }));
+  };
+
   return (
     <Container>
       <Header>
@@ -154,7 +159,7 @@ const Options: React.FC = () => {
         <textarea
           id="currentTask"
           value={settings.currentTask}
-          onChange={e => setSettings(prev => ({ ...prev, currentTask: e.target.value }))}
+          onChange={e => handleTaskChange(e.target.value)}
           style={{ width: '100%', minHeight: '100px' }}
         />
       </FormGroup>
