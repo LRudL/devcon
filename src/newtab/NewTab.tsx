@@ -142,7 +142,7 @@ const NewTab: React.FC = () => {
     }
   }, [user]);
 
-  const handleBlocklistToggle = async () => {
+  const toggleMobileBlocklist = async () => {
     if (!user) return; // Ensure user is authenticated
     try {
       await MessagingService.sendNotificationToUser(user.uid, {
@@ -155,6 +155,28 @@ const NewTab: React.FC = () => {
     } catch (error) {
       console.error('Failed to send notification:', error);
     }
+  };
+
+  const mobileBlocklistSet = async (status: boolean) => {
+    if (!user) return;
+    try {
+      await MessagingService.sendNotificationToUser(user.uid, {
+        type: status ? 'enableBlocklist' : 'disableBlocklist',
+        title: 'Blocklist Update',
+        body: status ? 'Attempting to enable blocklist' : 'Attempting to disable blocklist',
+        timestamp: Date.now(),
+      });
+    } catch (error) {
+      console.error('Failed to send notification:', error);
+    }
+  };
+
+  const enableMobileBlocklist = async () => {
+    await mobileBlocklistSet(true);
+  }; 
+
+  const disableMobileBlocklist = async () => {
+    await mobileBlocklistSet(false);
   };
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -287,11 +309,20 @@ const NewTab: React.FC = () => {
           Settings
         </button>
         <PauseButton />
+        <button onClick={() => optionsManager.set('pauseState', true)}>
+          Stop
+        </button>
         <button onClick={() => chrome.tabs.create({ url: '/logs/logs.html' })}>
           View Logs
         </button>
         <button onClick={() => AuthService.signOut()}>
           Sign Out
+        </button>
+        <button onClick={enableMobileBlocklist}>
+          Turn on blocklist
+        </button>
+        <button onClick={disableMobileBlocklist}>
+          Turn off blocklist
         </button>
       </div>
       {birthdate && <MementoMori birthDate={new Date(birthdate)} />}

@@ -9,9 +9,15 @@ export const StatusDisplay: React.FC = () => {
             const settings = await optionsManager.getAll();
             console.log('Status update - pause state:', settings.pauseState);
             if (!settings.pauseState) {
-                setStatus('Running');
+                if (settings.currentTask == '') {
+                    setStatus('Running, but no objective is set (only applying constitution from settings)');
+                } else {
+                    setStatus('Running');
+                }
+            } else if (settings.pauseState === true) {
+                setStatus('Stopped');
             } else {
-                const pauseDate = new Date(settings.pauseState);
+                const pauseDate = new Date(settings.pauseState as string);
                 const now = new Date();
                 const isSameDay = now.toDateString() === pauseDate.toDateString();
                 

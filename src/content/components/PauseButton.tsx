@@ -56,7 +56,7 @@ export const PauseButton: React.FC = () => {
                     <button onClick={() => handlePause(15)}>15 minutes</button>
                     <button onClick={() => handlePause(30)}>30 minutes</button>
                     <button onClick={() => handlePause(60)}>1 hour</button>
-                    <button onClick={() => handlePause(-1)}>Indefinitely</button>
+                    <button onClick={() => handlePause(1440)}>1 day</button>
                     <button onClick={handleResume}>Resume</button>
                 </PauseDropdown>
             )}
